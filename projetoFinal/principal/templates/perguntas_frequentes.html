@@ -1,0 +1,171 @@
+{% extends "base_logado.html" %}
+
+{% block titulo_header %}{% if perfil_usuario.grupo == 'E' %}Perguntas Frequentes{% else %}FAQ{% endif %} - Come{% endblock %}
+
+{% block titulo_body %}{% if perfil_usuario.grupo == 'E' %}Perguntas Frequentes{% else %}FAQ{% endif %}{% endblock %}
+
+{% block conteudo_principal %}
+{% if perfil_usuario.grupo == 'E' %}
+    <nav id="indice-perguntas" aria-labelledby="indice-perguntas-label" role="navigation">
+        <div>
+            <h2 id="indice-perguntas-label">Índice de perguntas</h2>
+            <button v-bind:aria-expanded="isIndexShown" v-on:click="isIndexShown = !isIndexShown" v-if="!isIndexShown">
+                <svg aria-labelledby="svg-label-exibir" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <title class="sr-only" id="svg-label-exibir">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Exibir índice de perguntas</title>
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <line x1="9" y1="12" x2="15" y2="12"></line>
+                    <line x1="12" y1="9" x2="12" y2="15"></line>
+                </svg>
+            </button>
+            <button v-on:click="isIndexShown = !isIndexShown" v-else>
+                <svg aria-labelledby="svg-label-esconder" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <title class="sr-only" id="svg-label-esconder">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Ocultar índice de perguntas</title>
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <line x1="9" y1="12" x2="15" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+        <ul v-show="isIndexShown">
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-1" href="#pergunta-1">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Onde consigo ajuda?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-2" href="#pergunta-2">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Por que vocês pediram minha senha?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-3" href="#pergunta-3">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Onde posso acompanhar a Come?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-4" href="#pergunta-4">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Como incluir meu estabelecimento?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-5" href="#pergunta-5">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Vocês estão contratando?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-6" href="#pergunta-6">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Onde vocês atuam?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-7" href="#pergunta-7">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Este site é acessível?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-8" href="#pergunta-8">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Vocês estão aceitando parcerias?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-9" href="#pergunta-9">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}O que vocês buscam em seus funcionários?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-10" href="#pergunta-10">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Vocês apoiam algum projeto social?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-11" href="#pergunta-11">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Como a nota média de um restaurante é calculada?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-12" href="#pergunta-12">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Como vocês escolhem as fotos de um estabelecimento?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-13" href="#pergunta-13">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Sou um investidor potencial. Como posso saber mais sobre a companhia?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-14" href="#pergunta-14">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Quais são os princípios que guiam esta companhia?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-15" href="#pergunta-15">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Vocês recebem visitantes em seus escritórios?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-16" href="#pergunta-16">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}A Come é sustentável?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-17" href="#pergunta-17">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}A Come investe em igualdade?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-18" href="#pergunta-18">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Quanto é o salário médio da Come?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-19" href="#pergunta-19">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}A Come se preocupa com restaurantes veganos ou vegetarianos?</a></li>
+            <li><a v-on:click="registrarAncoraClick(event)" id="link-pergunta-20" href="#pergunta-20">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Como chegar?</a></li>
+        </ul>
+    </nav>
+    <p>Nesta página, é possível encontrar cerca de vinte das perguntas mais comuns que recebemos em mensagens de contatos. Elas abordam desde aspectos funcionais do site a questões administrativas da empresa, passando por curiosidades, dicas, e outras informações pertinentes em geral.</p>
+{% endif %}
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-1" class="h2 mission">Onde consigo ajuda?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Por meio de nossa <a href="{% url 'enviar_mensagem' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}página de contato</a>. Se for uma emergência, <a href="tel:+5521123456789">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para que</span>{% endif %}ligue para nosso número</a> (21123456789). Por fim, se preferir, escreva para nós. Basta enviar sua carta ao <a href="#address-info">nosso endereço</a>.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-2" class="h2 mission">Por que vocês pediram minha senha?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Nós jamais pedimos as senhas ou quaisquer outros dados pessoais de nossos usuários. Se você foi solicitado a nos enviar algum dado do tipo, <a href="{% url 'enviar_mensagem' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para que </span>{% endif %}contate-nos imediatamente</a>, porque isso é um golpe.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-3" class="h2 mission">Onde posso acompanhar a Come?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Quando há alguma novidade sobre a <strong>Come</strong>, falamos sobre ela em nossa <a href="{% url 'eventos' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}página de eventos</a>. Lá, você também encontra botões para acessar nossas páginas em todas as redes sociais. Siga-nos para não perder nenhuma novidade legal.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-4" class="h2 mission">Como incluir meu estabelecimento?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Verifique a página específica para <a href="{% url 'incluir_estabelecimento' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}incluir estabelecimento</a>. Nela, você encontra tudo o que precisa saber para fazermos uma parceria.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-5" class="h2 mission">Vocês estão contratando?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Infelizmente, não estamos contratando no momento. Porém, fique ligado em nossa <a href="{% url 'trabalhe_conosco' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}página Trabalhe Conosco</a> e em nossa <a href="{% url 'eventos' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}página de eventos</a>, pois anunciaremos novas vagas tanto por lá quanto por meio de nossas redes sociais.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-6" class="h2 mission">Onde vocês atuam?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>No momento, a <strong>Come</strong> possui escritórios em quatro capitais do Sul e Sudeste do Brasil: Belo Horizonte, Curitiba, Rio de Janeiro, onde fica nossa cede, e em São Paulo. Por isso, é nestas cidades onde atuamos.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-7" class="h2 mission">Este site é acessível?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Claro! Na <strong>Come</strong>, não só levamos a sério a diversidade, como também temos a certeza de que ela é uma grande promotora de inovação e justiça social. Confira nossa <a href="{% url 'acessibilidade' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}página de Acessibilidade</a> para mais informações. Ainda assim, <a href="{% url 'enviar_mensagem' 'reclamacao' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para que </span>{% endif %}nos avise sobre problemas de acessibilidade</a> que você encontrar, tá? Dessa forma, poderemos fornecer a você um serviço cada vez melhor.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-8" class="h2 mission">Vocês estão aceitando parcerias?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>No momento, infelizmente, não estamos aceitando parcerias.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-9" class="h2 mission">O que vocês buscam em seus funcionários?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Não estamos contratando no momento. Porém, se quiser saber um pouco mais a nível profissional, verifique <a href="{% url 'missao' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}nossa missão, visão e valores</a>, ou contate-nos em <a href="https://linkedin.com/">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}nosso perfil no LinkedIn</a>.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-10" class="h2 mission">Vocês apoiam algum projeto social?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Sim, cerca de 5% (cinco porcento) de todo nosso rendimento anual é encaminhado a algumas Organizações Não-Governamentais de causas diversas, tais como: sustentabilidade; apoio a pessoas em condição de vulnerabilidade social; e incentivo à profissional de jovens de baixa renda.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-11" class="h2 mission">Como a nota média de um restaurante é calculada?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+{% if perfil_usuario.grupo == 'E' %}
+<p>Somamos todas as notas que um restaurante recebeu de cada usuário, e dividimos pelo total de notas dadas. Depois, arredondamos o resultado para o primeiro valor inteiro maior que ele.</p>
+{% else %}
+<p>Por meio da fórmula: somatório de <em>x</em><sub><em>i</em></sub>, com <em>i</em> de 1 a <em>n</em>, dividido por <em>n</em>. Para esta fórmula, <em>x</em><sub><em>i</em></sub> representa cada nota dada ao restaurante por cada usuário, e <em>n</em> é o total de notas dadas. Depois de calculado o resultado desta primeira fórmula, ele é arredondado para o primeiro valor inteiro maior que ele. </p>
+{% endif %}
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-12" class="h2 mission">Como vocês escolhem as fotos de um estabelecimento?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>As fotos são fornecidas pelos próprios estabelecimentos. Por favor, <a href="{% url 'enviar_mensagem' 'reclamacao' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para que </span>{% endif %}reporte qualquer problema com as fotos de estabelecimentos</a> que você tiver.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-13" class="h2 mission">Sou um investidor potencial. Como posso saber mais sobre a companhia?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Somos bastante transparentes com relação às nossas finanças. Para verificá-las, por favor, visite a <a href="{% url 'financas' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}página sobre nosso estado financeiro</a>.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-14" class="h2 mission">Quais são os princípios que guiam esta companhia?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Todos eles estão descritos e podem ser verificados em <a href="{% url 'missao' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}nossa página de missão, visão e valores</a></p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-15" class="h2 mission">Vocês recebem visitantes em seus escritórios?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Não, a não ser que tenha sido uma visita prévia e devidamente agendada. Para agendá-la, <a href="{% url 'enviar_mensagem' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para que </span>{% endif %}entre em contato conosco</a>. Se preferir, escreva para nós. Basta enviar sua carta ao <a href="#address-info">nosso endereço</a>.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-16" class="h2 mission">A Come é sustentável?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Sim. Nossos escritórios foram planejados seguindo-se uma série de boas práticas de arquitetura verde. Nossos servidores estão hospedados em companhias que, como nós, se preocupam com o meio ambiente. Fisicamente, utilizamos apenas papel reciclado e abolimos o uso de plástico em nossos escritórios. Além disso, apenas incluímos, entre nossos parceiros, estabelecimentos alimentícios que tenham um compromisso com a sustentabilidade.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-17" class="h2 mission">A Come investe em igualdade?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Certamente, investimos em equidade e diversidade. Nossa equipe é composta por pessoas das mais diversas características, e esse é um dos segredos de nosso sucesso: a pluralidade de nossas ideias e profissionais.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-18" class="h2 mission">Quanto é o salário médio da Come?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Por questões de privacidade, esse tipo de informação não é divulgado ao público. Porém, nosso setor de Recursos Humanos segue rigorosamente toda legislação brasileira. Além disso, para que todos os funcionários sejam tratados de forma mais igualitária dentro de nossa equipe, não terceirizamos nenhum de nossos serviços diretos, e somos transparentes quanto ao salário de cada posição junto à empresa.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-19" class="h2 mission">A Come se preocupa com restaurantes veganos ou vegetarianos?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Sim, assim como nos preocupamos em escolher restaurantes que ofereçam pratos diversos para condições variadas: vegetarianismo, veganismo, intolerância à lactose, dietéticos, alergias a oleaginosas, à glúten ou à albumina, entre outros.</p>
+
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="pergunta-20" class="h2 mission">Como chegar?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+
+<p>Cada estabelecimento tem seu endereço descrito em suas páginas. Se você quiser chegar a algum escritório em particular, por favor, contate-os diretamente por e-mail, telefone, ou qualquer que seja a forma que alguém de dentro desses escritórios o contatou, originalmente. Não divulgamos publicamente o endereço de nossos escritórios, apenas divulgamos <a href="#address-info">o endereço de nossa cede</a>. Vale ressaltar que não são aceitas visitas que não foram agendadas com antecedência.</p>
+
+<img class="img-perguntas-frequentes" loading="lazy" src="{{ MEDIA_URL }}{{ imagem.endereco }}" alt="{% if perfil_usuario.grupo != 'E' %}Imagem, {% endif %}{{ imagem.descricao }}" />
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const main = new Vue({
+            el: '#app',
+            delimiters: ['[[', ']]'],
+            data: {
+                isIndexShown: true,
+            },
+            methods: {
+                registrarMudancaInputForm(event) {
+                    let urlAtual = new URL(window.location.href);
+                    let parametros = new URLSearchParams('');
+                    parametros.append('path', urlAtual.pathname);
+                    parametros.append('el', '#' + event.target.id);
+                    parametros.append('val', event.target.value);
+                    console.log(event);
+                    fetch("{% url 'log' %}" + '?' + parametros.toString());
+                },
+                registrarAncoraClick(event) {
+                    let urlAtual = new URL(window.location.href);
+                    let parametros = new URLSearchParams('');
+                    parametros.append('path', urlAtual.pathname);
+                    parametros.append('el', '#' + event.currentTarget.id);
+                    fetch("{% url 'log' %}" + '?' + parametros.toString());
+                },
+            }
+        });
+    </script>
+{% endblock %}

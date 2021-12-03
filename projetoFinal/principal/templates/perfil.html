@@ -1,0 +1,125 @@
+{% extends "base_logado.html" %}
+{% load custom_tags %}
+
+{% block titulo_header %}Meu perfil - Come{% endblock %}
+
+{% block titulo_body %}Meu perfil{% endblock %}
+
+{% block conteudo_principal %}
+<section class="profile">
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+            <div tabindex='-1' class='message-box success'>
+                <div class="left">
+                    <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <path d="M9 12l2 2l4 -4"></path>
+                    </svg>
+                    {% if perfil_usuario.grupo == 'E' %}
+                        <span>{{ message }}</span>
+                    {% else %}
+                        <span>Sucesso</span>
+                    {% endif %}
+                </div>
+                <div class="right js">
+                    <button id="btn-close-msg-success-{{ forloop.counter }}" v-on:click="registrarBtnForm" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+                        <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Fechar mensagem de sucesso</span>
+                        <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <img class="round-image float-left" width="140" height="140" src="{{ MEDIA_URL }}{{ perfil.foto_fantasia.endereco }}" alt="{% if perfil_usuario.grupo != 'E' %}Imagem, {% endif %}{{ perfil.foto_fantasia.descricao }}" />
+    <{% if perfil_usuario.grupo == 'E' %}header{% else %}div{% endif %} class="header">
+        <div>
+            {% if perfil_usuario.grupo == 'E' %}<h2>{% else %}<div class="h2">{% endif %}{{ perfil.nome_fantasia }}{% if perfil_usuario.grupo == 'E' %}</h2>{% else %}</div>{% endif %}
+            <p>Usuário há {{ perfil.cadastrado_ha }}</p>
+        </div>
+        <div class='btn-container-editar'><a class="btn" href="{% url 'editar_perfil' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Editar{% if perfil_usuario.grupo == 'E' %} Perfil{% endif %}</a></div>
+    </{% if perfil_usuario.grupo == 'E' %}header{% else %}div{% endif %}>
+    <div class="bio">
+        <q>{{ perfil.frase_bio.texto }}.</q>
+        <address>({{ perfil.frase_bio.autor }})</address>
+    </div>
+</section>
+<section class="prato-favorito">
+    {% if perfil_usuario.grupo == 'E' %}<h3>{% else %}<div class="h3">{% endif %}Prato-favorito{% if perfil_usuario.grupo == 'E' %}</h3>{% else %}</div>{% endif %}
+    {% if not perfil.prato_preferido %}
+        <p>É tanta coisa boa que fica até difícil escolher, né? Quando estiver decidido, <a href="{% url 'editar_perfil' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para que </span>{% endif %}edite seu perfil para definir seu prato favorito.</a></p>
+    {% else %}
+        {% if perfil_usuario.grupo == 'E' %}
+            <p>{{ perfil.prato_preferido }}.</p>
+        {% else %}
+            <p><a href="{% url 'index' %}?p={{ perfil.prato_preferido.id }}"><span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Listar restaurantes com </span>{{ perfil.prato_preferido }}<span class="sr-only"> como prato-chefe</span></a></p>
+        {% endif %}
+    {% endif %}
+</section>
+<section class="minhas-avaliacoes">
+    {% if perfil_usuario.grupo == 'E' %}<h3>{% else %}<div class="h3">{% endif %}Minhas avaliações{% if perfil_usuario.grupo == 'E' %}</h3>{% else %}</div>{% endif %}
+    {% if not avaliacoes %}
+        <p class='not-found'>Parece que você ainda não fez nenhuma avaliação. Gostaria de <a href="{% url 'index' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link de </span>{% endif %}procurar um restaurante</a> para avaliá-lo?</p>
+    {% else %}
+        <ul>
+        {% for avaliacao in avaliacoes %}
+            <li class="avaliacao">
+                <div>
+                    <{% if perfil_usuario.grupo == 'E' %}header{% else %}div{% endif %} class="header">
+                        <a href="{% url 'visualizar_restaurante' avaliacao.restaurante.id %}#opiniao-usuario">
+                            {% with avaliacao.restaurante.fotos.all|first as foto %}
+                            <img class="restaurante-list-pic" width="256" height="170" src="{{ MEDIA_URL }}{{ foto.endereco }}" alt="{% if perfil_usuario.grupo != 'E' %}Imagem, {% endif %}{{ foto.descricao }}" />
+                            {% endwith %}
+                            {% if perfil_usuario.grupo == 'E' %}<h4 class="h4">{% else %}<div class="h4">{% endif %}{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}{% if perfil_usuario.grupo == 'E' %}<span class="sr-only">Minha avaliação de </span>{% endif %}{{ avaliacao.restaurante.nome }}{% if perfil_usuario.grupo == 'E' %}</h4>{% else %}</div>{% endif %}
+                        </a>
+                    </{% if perfil_usuario.grupo == 'E' %}header{% else %}div{% endif %}>
+                    <p class="avaliacao-texto"><q>{{ avaliacao.texto }}</q></p>
+                </div>
+                <{% if perfil_usuario.grupo == 'E' %}footer{% else %}div{% endif %} class="footer">
+                    <p>{% if perfil_usuario.grupo == 'E' %}<span class="sr-only">Nota {{avaliacao.nota}} de 5</span>{% endif %}<span class="red" {% if perfil_usuario.grupo == 'E' %}aria-hidden="true"{% endif %}>{% convertToStar avaliacao.nota %}</span></p>
+                    <p><small>({{ avaliacao.data|date:"d/m/Y" }})</small></p>
+                </{% if perfil_usuario.grupo == 'E' %}footer{% else %}div{% endif %}>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const main = new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        mounted() {
+            {% if perfil_usuario.grupo == 'E' %}
+            this.$el.querySelector('.message-box').focus();
+            {% endif %}
+        },
+        methods: {
+            registrarBtnForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.currentTarget.id);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+            registrarMudancaInputForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.target.id);
+                parametros.append('val', event.target.value);
+                console.log(event);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+        },
+    });
+</script>
+{% endblock %}

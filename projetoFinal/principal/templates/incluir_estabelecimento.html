@@ -1,0 +1,11 @@
+{% extends "base_logado.html" %}
+
+{% block titulo_header %}Incluir Estabelecimento - Come{% endblock %}
+
+{% block titulo_body %}Incluir Estabelecimento{% endblock %}
+
+{% block conteudo_principal %}
+<p>Sentimos muito, mas, atualmente, não estamos aceitando sugestões pessoais de inclusão de estabelecimento. Se você for o dono de um estabelecimento situado em Belo Horizonte, Curitiba, Rio de Janeiro ou São Paulo, enfim, em alguma das cidades onde o <strong>Come</strong> possui um escritório, fique tranquilo. É bem provável que, se ainda não tivermos contatado seu estabelecimento, logo o faremos. Até lá, agradecemos pela compreensão e paciência.</p>
+
+<img class="img-incluir-estabelecimento" loading="lazy" src="{{ MEDIA_URL }}{{ imagem.endereco }}" alt="{% if perfil_usuario.grupo != 'E' %}Imagem, {% endif %}{{ imagem.descricao }}" />
+{% endblock %}

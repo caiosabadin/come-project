@@ -1,0 +1,24 @@
+{% extends "base_logado.html" %}
+
+{% block titulo_header %}Mapa{% if perfil_usuario.grupo == 'E' %} do site{% endif %} - Come{% endblock %}
+
+{% block titulo_body %}Mapa{% if perfil_usuario.grupo == 'E' %} do site{% endif %}{% endblock %}
+
+{% block conteudo_principal %}
+<ul class="sitemap" {% if perfil_usuario.grupo == 'E' %}aria-labelledby="h1"{% endif %}>
+    <li><a href="{% url 'index' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Busca de restaurante (página inicial)</a></li>
+    <li><a href="{% url 'visualizar_perfil' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Visualizar perfil</a></li>
+    <li><a href="{% url 'editar_perfil' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Editar perfil</a></li>
+    <li><a href="{% url 'cozinhas' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Cozinhas e pratos típicos</a></li>
+    <li><a href="{% url 'perguntas_frequentes' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Perguntas frequentes</a></li>
+    <li><a href="{% url 'acessibilidade' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Acessibilidade</a></li>
+    <li><a href="{% url 'incluir_estabelecimento' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Incluir estabelecimento</a></li>
+    <li><a href="{% url 'enviar_mensagem' 'sugestao' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Sugestões</a></li>
+    <li><a href="{% url 'enviar_mensagem' 'duvida' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Dúvidas</a></li>
+    <li><a href="{% url 'enviar_mensagem' 'reclamacao' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Reclamações</a></li>
+    <li><a href="{% url 'enviar_mensagem' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Outros contatos</a></li>
+    <li><a href="{% url 'financas' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Finanças</a></li>
+    <li><a href="{% url 'trabalhe_conosco' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Trabalhe conosco</a></li>
+    <li><a href="{% url 'eventos' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Eventos</a></li>
+</ul>
+{% endblock %}

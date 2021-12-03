@@ -1,0 +1,337 @@
+{% extends "base_logado.html" %}
+{% load custom_tags %}
+
+{% block titulo_header %}Encontre um restaurante - Come{% endblock %}
+
+{% block titulo_body %}Restaurantes{% endblock %}
+
+{% block caixaBusca %}
+<div></div>
+{% endblock %}
+
+{% block extras_header %}
+<form {% if perfil_usuario.grupo == 'E' %}aria-labelledby="label-form-busca"{% endif %} id="form-busca" method="get" action="{% url 'index' %}">
+    {% if perfil_usuario.grupo == 'E' %}<span id="label-form-busca" class="sr-only">Encontre restaurantes</span>{% endif %}
+    <div class="input-caixa-busca">
+        <label for="caixa-busca">{% if perfil_usuario.grupo == 'E' %}<span class="sr-only">Informe os </span>{% endif %}{% if perfil_usuario.grupo == 'E' %}Nomes de restaurantes ou pratos{% else %}Restaurantes{% endif %}{% if perfil_usuario.grupo == 'E' %}<span class="sr-only"> separados por espaço</span>{% endif %}</label>
+        <input v-on:focusout="registrarMudancaInputForm" {% if "b" in request.GET %}value="{{ request.GET.b }}"{% endif %} type="text" ref="b" name="b" id="caixa-busca" {% if perfil_usuario.grupo == 'E' %}aria-describedby="instrucoes-busca-restaurante"{% endif %} />
+        {% if perfil_usuario.grupo == 'E' %}<span class="sr-only" id="instrucoes-busca-restaurante">Para encontrar algum restaurante, primeiro procure pelo nome dele ou de algum de seus pratos, separando-os com espaços, ou escolha uma cidade, então clique no botão <em>Procurar Restaurantes</em>.</span>{% endif %}
+    </div>
+    <fieldset>
+        <legend>{% if perfil_usuario.grupo == 'E' %}Apenas restaurantes em:{% else %}Cidade:{% endif %}</legend>
+        <input class="sr-only" type="checkbox" name="rj" ref="rj" v-on:change="registrarMudancaCheckForm" id="local-rj" {% if request.GET.rj == 'on' %}checked="checked"{% endif %} /><label for="local-rj">Rio de Janeiro</label>
+        <input class="sr-only" type="checkbox" name="sp" ref="sp" v-on:change="registrarMudancaCheckForm" id="local-sp" {% if request.GET.sp == 'on' %}checked="checked"{% endif %} /><label for="local-sp">São Paulo</label>
+        <input class="sr-only" type="checkbox" name="bh" ref="bh" v-on:change="registrarMudancaCheckForm" id="local-bh" {% if request.GET.bh == 'on' %}checked="checked"{% endif %} /><label for="local-bh">Belo Horizonte</label>
+        <input class="sr-only" type="checkbox" name="cb" ref="cb" v-on:change="registrarMudancaCheckForm" id="local-cb" {% if request.GET.cb == 'on' %}checked="checked"{% endif %} /><label for="local-cb">Curitiba</label>
+    </fieldset>    
+    <button class="btn-encontrar-restaurantes" v-on:click.prevent="carregaRestaurantesFiltrados" type="submit">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Procurar {% if perfil_usuario.grupo == 'E' %}Restaurantes{% endif %}</button>
+</form>
+{% endblock %}
+
+{% block conteudo_principal %}
+<section id="box-lista-restaurantes">
+
+    {% if perfil_usuario.grupo == 'E' %}
+        <h2 id="lista-restaurantes" ref="listaRestaurantes" tabindex="-1" class="sr-only">Lista de restaurantes encontrados com os critérios de busca utilizados</h2>
+    {% else %}
+        <div id="lista-restaurantes" ref="listaRestaurantes" tabindex="-1" class="sr-only">Lista de restaurantes encontrados com os critérios de busca utilizados</div>
+    {% endif %}
+
+    {# Caso o usuário não tenha Javascript, é exibida essa lista. Caso tenha JS, a lista é removida com JS. #}
+    <div ref="jsRemovable" class="no-js">
+        {% for restaurante in restaurantes %}
+            {# Exibido caso haja restaurantes encontrados. #}
+            <{% if perfil_usuario.grupo == 'E' %}article{% else %}div{% endif %} aria-labelledby="dj-restaurante-{{restaurante.id}}" class="article restaurante">
+                {% if perfil_usuario.grupo == 'E' %}
+                <h3 id="dj-restaurante-{{restaurante.id}}"><a href="{% url 'visualizar_restaurante' restaurante.id %}"><span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Restaurante </span>{{ restaurante.nome }}</a></h3>
+                {% else %}
+                <div class="h3" id="dj-restaurante-{{restaurante.id}}"><a href="{% url 'visualizar_restaurante' restaurante.id %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}{{ restaurante.nome }}</a></div>
+                {% endif %}
+                <div class="localizacao"><{% if perfil_usuario.grupo == 'E' %}h4{% else %}div{% endif %} class="sr-only">Localização:</{% if perfil_usuario.grupo == 'E' %}h4{% else %}div{% endif %}> <p>{{ restaurante.endereco }}</p></div>
+                {% if restaurante.fotos.exists %}
+                {% with restaurante.fotos.all|first as foto %}
+                <img class="restaurante-list-pic" width="256" height="170" src="{{ MEDIA_URL }}{{foto.endereco}}" alt="{% if perfil_usuario.grupo != 'E' %}Imagem, {% endif %}{{foto.descricao}}" />
+                {% endwith %}
+                {% endif %}
+                <div class="sobre"><{% if perfil_usuario.grupo == 'E' %}h4{% else %}div{% endif %} class="{% if perfil_usuario.grupo != 'E' %}h4 {% endif %}sr-only">Sobre o restaurante:</{% if perfil_usuario.grupo == 'E' %}h4{% else %}div{% endif %}> <p>{{ restaurante.sobre }}</p></div>
+                <div class="list-pratos">
+                    <{% if perfil_usuario.grupo == 'E' %}h4{% else %}div class="h4"{% endif %}>Pratos-chefes:</{% if perfil_usuario.grupo == 'E' %}h4{% else %}div{% endif %}>
+                    <ul>
+                    {% for prato in restaurante.pratos.all %}
+                        {% if perfil_usuario.grupo == 'E' %}
+                            <li>{{prato.nome|lower}}</li>
+                        {% else %}
+                            <li><a href="{% url 'index' %}?p={{ prato.id }}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}<span class="sr-only">Listar restaurantes com </span>{{prato.nome}}<span class="sr-only"> como prato-chefe</span></a></li>
+                        {% endif %}
+                    {% empty %}
+                        <li>Nenhum prato cadastrado para esse restaurante</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                <div>
+                    <{% if perfil_usuario.grupo == 'E' %}h4{% else %}div class="h4"{% endif %}>Nota:</{% if perfil_usuario.grupo == 'E' %}h4{% else %}div{% endif %}><p><span {% if not not restaurante.nota %}class="red"{% endif %}> {% if perfil_usuario.grupo == 'E' and not not restaurante.nota %}<span class="sr-only">{{ restaurante.nota }} de 5</span>{% endif %}<span {% if perfil_usuario.grupo == 'E' %}aria-hidden="true"{% endif %}>{% convertToStar restaurante.nota %}</span></span></p></div>
+            </{% if perfil_usuario.grupo == 'E' %}article{% else %}div{% endif %}>
+        {% empty %}
+            {# Exibido caso não haja nenhum restaurante encontrado #}
+            <{% if perfil_usuario.grupo == 'E' %}article{% else %}div{% endif %} class="article infobox no-js">
+                {% if perfil_usuario.grupo == 'E' %}<h3 class="sr-only">Sentimos muito...</h3>{% endif %}
+                <p>
+                    <svg focusable="false" aria-hidden="true" width="28" height="28" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Nenhum restaurante encontrado com os parâmetros passados. Para encontrar algum restaurante, primeiro procure pelo nome dele ou de algum de seus pratos, separando-os com espaços, ou escolha uma cidade, então clique no botão <em>Encontrar Restaurantes</em>. 
+                </p>
+            </{% if perfil_usuario.grupo == 'E' %}article{% else %}div{% endif %}>
+        {% endfor %}
+    
+        {# Paginação. A nav ficará vazia com dois divs vazios se não houver restaurante encontrado. #}
+        <nav aria-label="Navegar entre restaurantes" class="paginator-single">
+            <div>
+                {% if page_obj.has_previous %}
+                    <a href="?{% url_replace request 'page' page_obj.previous_page_number %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %} <span class="sr-only">Página </span>Anterior</a>
+                {% endif %}
+            </div>
+        
+            <div>
+                {% if page_obj.has_next %}
+                    <a href="?{% url_replace request 'page' page_obj.next_page_number %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}<span class="sr-only">Página </span>Seguinte</a>
+                {% endif %}
+            </div>
+        </nav>
+    </div>
+    
+    {# Caso o usuário tenha Javascript, o atributo "hidden" desta div é desativado, fazendo-a aparecer aos usuários. Para quem não tem JS, o hidden mantém essa seção oculta. #}
+    <div ref='jsLista' class="js">
+
+        {# Exibido caso não haja nenhum restaurante encontrado e a página não tenha acabado de ser carregada #}
+        <{% if perfil_usuario.grupo == 'E' %}article{% else %}div{% endif %} v-if="restaurantes.length==0 && !pageJustLoaded" class="article infobox js">
+            {% if perfil_usuario.grupo == 'E' %}<h3 class="sr-only">Sentimos muito...</h3>{% endif %}
+            <p>
+                <svg focusable="false" aria-hidden="true" width="28" height="28" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Nenhum restaurante encontrado com os parâmetros passados. Para encontrar algum restaurante, primeiro procure pelo nome dele ou de algum de seus pratos, separando-os com espaços, ou escolha uma cidade, então clique no botão <em>Encontrar Restaurantes</em>.    
+            </p>
+        </{% if perfil_usuario.grupo == 'E' %}article{% else %}div{% endif %}>
+
+        {# Exibe cada um dos restaurantes, formatando-os conforme a tag article abaixo #}
+        <{% if perfil_usuario.grupo == 'E' %}article{% else %}div{% endif %} v-for="restaurante in restaurantesCarregados" :key="restaurante.id" v-bind:aria-labelledby="'restaurante-' + restaurante.id" class="article restaurante js">
+            {% if perfil_usuario.grupo == 'E' %}
+            <h3 class="h3" tabindex='-1' v-bind:id="'restaurante-' + restaurante.id"><a v-bind:href="'/restaurante/' + restaurante.id">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}<span class="sr-only">Restaurante </span>[[restaurante.nome]]</a></h3>
+            {% else %}
+            <div class="h3" tabindex='-1' v-bind:id="'restaurante-' + restaurante.id"><a v-bind:href="'/restaurante/' + restaurante.id">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}[[restaurante.nome]]</a></div>
+            {% endif %}
+            <div class="localizacao"><{% if perfil_usuario.grupo == 'E' %}h4{% else %}div{% endif %} class="sr-only">Localização:</{% if perfil_usuario.grupo == 'E' %}h4{% else %}div{% endif %}> <p>[[restaurante.endereco]].</p></div>
+            <img class="restaurante-list-pic" v-if="restaurante.fotos[0]" width="256" height="170" v-bind:src="'{{ MEDIA_URL }}' + restaurante.fotos[0].endereco" v-bind:alt="'{% if perfil_usuario.grupo != "E" %}Imagem, {% endif %}' + restaurante.fotos[0].descricao" />
+            <div class="sobre"><{% if perfil_usuario.grupo == 'E' %}h4{% else %}div{% endif %} class="{% if perfil_usuario.grupo != 'E' %}h4 {% endif %}sr-only">Sobre o restaurante:</{% if perfil_usuario.grupo == 'E' %}h4{% else %}div{% endif %}> <p>[[restaurante.sobre]]</p></div>
+            <div class="lista-pratos">
+                <{% if perfil_usuario.grupo == 'E' %}h4{% else %}div class="h4"{% endif %}>Pratos-chefes:</{% if perfil_usuario.grupo == 'E' %}h4{% else %}div{% endif %}>
+                <ul>
+                    {% if perfil_usuario.grupo == 'E' %}
+                    <li v-for="prato in restaurante.pratos">[[prato.nome|lower]]</li>
+                    {% else %}
+                    <li v-for="prato in restaurante.pratos"><a href="#" v-on:click.prevent="carregaRestaurantesComPratos(prato.id)"><span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Exibir restaurantes com </span>[[prato.nome]]<span class="sr-only"> como prato-chefe</span></a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="flex-nota">
+                <{% if perfil_usuario.grupo == 'E' %}h4{% else %}div class="h4"{% endif %}>
+                    Nota:
+                </{% if perfil_usuario.grupo == 'E' %}h4{% else %}div{% endif %}>
+                <p>
+                    {% if perfil_usuario.grupo == 'E' %}
+                        <span class="sr-only" v-if="restaurante.nota > 0 && restaurante.nota <= 5">
+                            [[restaurante.nota|readReviewAsNumber]]
+                        </span>
+                        <span class="sr-only" v-else>Sem avaliações</span>
+                    {% endif %}
+                    <span v-bind:class="{red: (restaurante.nota > 0 && restaurante.nota <= 5)}" {% if perfil_usuario.grupo == 'E' %}aria-hidden="true"{% endif %}>
+                        [[restaurante.nota|convertToStar]]
+                    </span>
+                </p>
+            </div>
+        </{% if perfil_usuario.grupo == 'E' %}article{% else %}div{% endif %}>
+        
+        {# Botão para exibir mais restaurantes. #}
+        <nav id="nav-load-more" v-if="limite < restaurantes.length" ref="navRestaurantes" class="js">
+            <button ref="btnCarregaMais" id="btn-carregar-mais" class="btn-carregar-mais" v-on:click="registrarBtnForm(event); exibirMaisRestaurantes();">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}{% if perfil_usuario.grupo == 'E' %}<span class="sr-only">Carregar </span>{% endif %}Mais {% if perfil_usuario.grupo == 'E' %}restaurantes{% endif %}</button>
+        </nav>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const main = new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data: {
+            pageJustLoaded: true,
+            restaurantes: [],
+            isFirstSearch: true,
+            limite: 5
+        },
+        /* Carrega a lista de itens a serem exibidos */
+        beforeMount() {
+            let parametrosUrlAtual = new URL(window.location.href).searchParams;
+
+            /* 
+             * Se houver um parâmetro de prato, então a única listagem que ele
+             * carregará será a de pratos. Do contrário, ele fará a listagem
+             * com os demais filtros.
+             */
+            if (parametrosUrlAtual.get('p')) {
+                this.carregaRestaurantesComPratos(parametrosUrlAtual.get('p'));
+            }
+            else {
+                this.carregaRestaurantesFiltrados();
+            }
+        },
+        methods: {
+            registrarMudancaInputForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.target.id);
+                parametros.append('val', event.target.value);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+            registrarMudancaCheckForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.target.id);
+                parametros.append('chkd', event.target.checked);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+            registrarBtnForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.currentTarget.id);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+            /* Método chamado quando o usuário clica em algum dos links dos pratos do restaurante */
+            carregaRestaurantesComPratos(id) {
+                let parametros = new URLSearchParams('');
+                parametros.append('j', 'on');
+                parametros.append('p', id);
+                fetch("{% url 'index' %}" + "?" + parametros.toString())
+                .then(response => response.json())
+                .then(dados => {
+                    this.restaurantes = dados.restaurantes;
+                    this.limite = 5;
+                    this.pageJustLoaded = false;
+                });
+                this.$nextTick(() => {this.$refs.listaRestaurantes.focus()});
+            },
+            /* Método chamado quando o botão "Carregar mais restaurantes" é pressionado */
+            exibirMaisRestaurantes() {
+                let aux = this.limite;
+                this.limite += 5;
+                this.$nextTick(() => {
+                    {# Somente usuários do grupo experimental vão ter os controles melhorados de SPA aplicados #}
+                    {% if perfil_usuario.grupo == 'E' %}
+                        let restaurantesExibidos = this.$el.getElementsByClassName('h3');
+                        let restauranteFoco =  restaurantesExibidos[aux];
+                        restauranteFoco.focus();
+                    {% endif %}
+                })
+            },
+            /* Método chamado quando o botão "Encontrar Restaurantes" é pressionado */
+            carregaRestaurantesFiltrados() {
+                let parametros = new URLSearchParams('');
+                let parametrosUrlAtual = new URL(window.location.href).searchParams;
+
+                /* Mapeia os parâmetros */
+                parametros.append('j', 'on');
+                let rj = (typeof this.$refs.rj !== 'undefined') ? (this.$refs.rj.checked) : (false);
+                let sp = (typeof this.$refs.sp !== 'undefined') ? (this.$refs.sp.checked) : (false);
+                let bh = (typeof this.$refs.bh !== 'undefined') ? (this.$refs.bh.checked) : (false);
+                let cb = (typeof this.$refs.cb !== 'undefined') ? (this.$refs.cb.checked) : (false);
+                if (rj || parametrosUrlAtual.get('rj')) parametros.append('rj',  'on');
+                if (sp || parametrosUrlAtual.get('sp')) parametros.append('sp',  'on');
+                if (bh || parametrosUrlAtual.get('bh')) parametros.append('bh',  'on');
+                if (cb || parametrosUrlAtual.get('cb')) parametros.append('cb',  'on');
+                /*
+                 * Se o usuário digitou algo no formulário atual e apertou o botão, o formulário atual tem
+                 * prioridade sobre o que está na URL. Se o usuário não digitou nada, mas o valor existe
+                 * na URL, então o valor que existe na URL será usado. Do contrário, esse parâmetro não é
+                 * considerado setado, então nada é feito.
+                 */
+                let paramBusca = (typeof this.$refs.b !== 'undefined') ? (this.$refs.b.value) : ('');
+
+                if (paramBusca !== '')
+                    parametros.append('b', paramBusca);
+                else if (paramBusca === '' && parametrosUrlAtual.get('b') && this.isFirstSearch)
+                    parametros.append('b', parametrosUrlAtual.get('b'));
+
+                /* Cria uma URL com base em ter ou não os parâmetros mapeados */
+                let urlFetch = "{% url 'index' %}" + '?' + parametros.toString();
+                fetch(urlFetch)
+                .then(response => response.json())
+                .then(dados => {
+                    this.restaurantes = dados.restaurantes;
+                    if (typeof this.$refs.btnCarregaMais !== 'undefined') {
+                        if (this.restaurantes.length <= 5)
+                            this.$refs.btnCarregaMais.parentNode.removeChild(this.$refs.btnCarregaMais);
+                        this.$nextTick(() => {this.$refs.listaRestaurantes.focus()});
+                    }
+                    this.pageJustLoaded = false;
+                    this.isFirstSearch = false;
+                });
+            }
+        },
+        computed: {
+            /* 
+             * Propriedade autoatualizável para carregar sempre os n primeiros restaurantes, com
+             * base na quantidade de vezes em que o botão de carregar mais restaurantes foi
+             * pressionado ou não. Cada vez que é pressionado, o limite, que começa com 5, é acrescido
+             * de mais 5.
+             */
+            restaurantesCarregados() {
+                return this.restaurantes.slice(0, this.limite);
+            }
+        },
+        filters: {
+            /* Deixar um texto em lowercase */
+            lower: function(txt) {
+                return txt.toLowerCase();
+            },
+            /* Prepara a leitura de notas melhorada para pessoas cegas */
+            readReviewAsNumber: function(nota) {
+                if(nota>0) {
+                    return nota + " de 5.";
+                } else {
+                    return "Sem avaliações.";
+                }
+            },
+            /* Converte o inteiro da nota do restaurante em estrelinhas preenchidas ou vazias */
+            convertToStar: function(nota) {
+                let notaEstrelas = "";
+                switch(Math.round(nota)) {
+                    case 5:
+                        notaEstrelas = "★★★★★";
+                        break;
+                    case 4:
+                        notaEstrelas = "★★★★☆";
+                        break;
+                    case 3:
+                        notaEstrelas = "★★★☆☆";
+                        break;
+                    case 2:
+                        notaEstrelas = "★★☆☆☆";
+                        break;
+                    case 1:
+                        notaEstrelas = "★☆☆☆☆";
+                        break;
+                    default:
+                        notaEstrelas = "Sem avaliações.";
+                        break;
+                }
+                return notaEstrelas;
+            }
+        }
+    });
+</script>
+{% endblock %}

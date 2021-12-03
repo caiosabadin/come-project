@@ -1,0 +1,21 @@
+{% extends "base_logado.html" %}
+
+{% block titulo_header %}{% if perfil_usuario.grupo == 'E' %}Financeiro{% else %}Transparência{% endif %} - Come{% endblock %}
+
+{% block titulo_body %}{% if perfil_usuario.grupo == 'E' %}Financeiro{% else %}Transparência{% endif %}{% endblock %}
+
+{% block conteudo_principal %}
+{% if perfil_usuario.grupo == 'E' %}<p>Nesta página, é possível conferir alguns gráficos que indicam as finanças, o estado econômico da companhia <strong>Come</strong> no primeiro semestre do ano corrente. Os gráficos foram concebidos para apresentar, sucinta e detalhadamente, as informações que representam. Com isso, espera-se que eles possam ser consultados tanto por leigos no assunto quanto por acionistas e profissionais das áreas relacionadas à economia, que estejam interessados na saúde econômica da empresa ou mesmo que queiram nela investir. Dessa forma, a <strong>Come</strong> reafirma seu compromisso com sua transparência financeira.</p>{% endif %}
+
+{% for grafico in graficos %}
+<div class="chart-container">
+    <figure class="chart" role="figure">
+        {% if perfil_usuario.grupo == 'E' %}
+        <img src="{{ MEDIA_URL }}{{ grafico.endereco }}" alt="{{ grafico.descricao_experimental }}" />
+        {% else %}
+        <img src="{{ MEDIA_URL }}{{ grafico.endereco }}" alt="{% if perfil_usuario.grupo != 'E' %}Imagem, {% endif %}{{ grafico.descricao }}" />
+        {% endif %}
+    </figure>
+</div>
+{% endfor %}
+{% endblock %}

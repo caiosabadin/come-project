@@ -1,0 +1,13 @@
+{% extends "base_logado.html" %}
+
+{% block titulo_header %}Acessibilidade - Come{% endblock %}
+
+{% block titulo_body %}Acessibilidade{% endblock %}
+
+{% block conteudo_principal %}
+<p>Nós, da <strong>Come</strong>, acreditamos que a diversidade é o que torna o mundo um lugar único e tão especial. Por isso, nosso site foi desenvolvido para ser o mais acessível possível. Todo site é navegável tanto pelo teclado quanto pelo mouse. A experiência de usuário foi otimizada para leitores de tela e para os modos de alto contraste. Os textos foram escritos para que pessoas de diferentes capacidades cognitivas possam entendê-lo, também.</p>
+<p>Ainda assim, sabemos que é impossível oferecer uma experiência acessível universal e perfeita. Porém, nós também sabemos que é sempre possível melhorar. Por isso, valorizamos muito as críticas construtivas, pois é apenas com elas que podemos oferecer um serviço de ainda mais qualidade para nossos utilizadores.</p>
+<p>Então, não hesite: contate-nos. <a href="{% url 'enviar_mensagem' 'duvida' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link de </span>{% endif %}Tire dúvidas sobre acessibilidade</a>. Se erramos, por favor, <a href="{% url 'enviar_mensagem' 'reclamacao' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link de </span>{% endif %}abra uma reclamação</a>. Estamos dispostos a assumir nossos erros e a corrigi-los. Além disso, é claro, <a href="{% url 'enviar_mensagem' 'sugestao' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link de </span>{% endif %}sugira mudanças</a>. Queremos ouvir suas ideias, para deixar este site cada vez mais personalizado e adaptado às suas diversas necessidades.</p>
+
+<img class="img-acessibilidade" loading="lazy" src="{{ MEDIA_URL }}{{ imagem.endereco }}" alt="{% if perfil_usuario.grupo != 'E' %}Imagem, {% endif %}{{ imagem.descricao }}" />
+{% endblock %}

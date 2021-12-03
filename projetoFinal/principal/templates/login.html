@@ -1,0 +1,59 @@
+{% extends "base_deslogado.html" %}
+
+{% block skiplinks %}<div></div>{% endblock %}
+{% block titulo_header %}Login{% endblock %}
+{% block titulo_body %}Login{% endblock %}
+
+{% block conteudo_principal %}
+
+{% if form.errors %}
+  <div id="error-form" tabindex='-1' class='message-box error'>
+      <span class="sr-only">Erro</span>
+      <div class="left">
+          <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+              <circle cx="12" cy="12" r="9"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>Há algo de errado com seu usuário ou senha. Por favor, tente novamente.</span>
+      </div>
+      <div class="right js">
+          <button onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+              <span class="sr-only">Fechar mensagem de erro</span>
+              <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+              </svg>
+          </button>
+      </div>
+  </div>
+{% endif %}
+
+  <form id="form-login" method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <div class="form-container">
+      <label for="id_username">Usuário:</label>
+      <input aria-describedby="error-form" aria-required="true" type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username" maxlength="150" required="" id="id_username" />
+    </div>
+    <div class="form-container">
+      <label for="id_password">Senha:</label>
+      <input aria-describedby="error-form" aria-required="true" type="password" name="password" autocomplete="current-password" required="" id="id_password" />
+    </div>
+    <button class='btn-login' type="submit">Entrar</button>
+  </form>
+
+{% endblock %}
+
+{% block navegacao_principal %}
+<nav aria-hidden="true"></nav>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let msg = document.querySelector('.message-box');
+  if (msg)
+    msg.focus();
+</script>
+{% endblock %}

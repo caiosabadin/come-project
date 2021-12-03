@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>{% block titulo_header %}{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Oleo+Script:wght@700&display=swap" rel="stylesheet" /> 
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link rel="stylesheet" href="{% static 'css/normalise.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+        <noscript><link rel="stylesheet" href="{% static 'css/noscript.css' %}" /></noscript>
+        <script src="{% static 'js/vue.js' %}"></script>
+    </head>
+    <body>
+        <div id="app">
+        {% block skiplinks %}{% endblock %}
+        {% block banner %}{% endblock %}
+        <section id="wrapper">
+            <div id="box login">
+                <div id="centralise-login">
+                    <main id="main-content" class="main-login" role="main">
+                        <header id="header-main-content">
+                            <h1 id="h1">{% block titulo_body %}{% endblock %}</h1>
+                        </header>
+                        <section id="box-main-content">
+                            {% block conteudo_principal %}{% endblock %}
+                        </section>
+                    </main>
+                </div>
+                {% block navegacao_principal %}{% endblock %}
+            </div>
+        </section>
+        {% block rodape %}{% endblock %}
+        </div>
+        {% block scripts %}{% endblock %}
+    </body>
+</html>

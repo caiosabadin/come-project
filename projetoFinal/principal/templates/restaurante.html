@@ -1,0 +1,467 @@
+{% extends "base_logado.html" %}
+{% load widget_tweaks %}
+{% load custom_tags %}
+
+{% block titulo_header %}
+{% if not editando %}
+{{ restaurante.nome }} - Come
+{% else %}
+{% if perfil_usuario.grupo == 'E' %}
+Edição da avaliação do restaurante {{ restaurante.nome }} - Come
+{% else %}
+Editar avaliação do restaurante {{ restaurante.nome }} - Come
+{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block titulo_body %}
+{% if not editando %}
+{{ restaurante.nome }}
+{% else %}
+{% if perfil_usuario.grupo == 'E' %}
+Edição da avaliação do restaurante {{ restaurante.nome }}
+{% else %}
+Editar avaliação do restaurante {{ restaurante.nome }}
+{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block conteudo_principal %}
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} class="h2 sr-only">Localização</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+<small>{{ restaurante.endereco }}</small>
+{% if restaurante.fotos.exists %}
+<section class="carousel" aria-labelledby="carouselheading">
+    <{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="carouselheading" class="h2 sr-only">Fotografias de {{ restaurante.nome }}</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+    <ul {% if perfil_usuario.grupo == 'E' %}aria-live="polite" aria-atomic="true"{% endif %} ref="carouselImages" class="carousel-images js">
+        <li tabindex="0" v-for="(foto, i) in fotos" v-bind:class='(i+1 == fotoAtual) ? "slide active js" : "slide js"'>
+            <img loading="lazy" v-bind:src="foto.endereco" v-bind:alt="foto.descricao" />
+        </li>
+    </ul>
+    {% with restaurante.fotos.all|random as foto %}
+    {# Garante que pelo menos uma imagem será exibida para quem não tem JS ativo #}
+    <ul class="no-js">
+        <li tabindex="0" class="slide active">
+            <img width="640" src="{{MEDIA_URL}}{{foto.endereco}}" alt="{% if perfil_usuario.grupo != 'E' %}Imagem, {% endif %}{{foto.descricao}}" />
+        </li>
+    </ul>
+    {% endwith %}
+    <div id="posicao-slide" class="sr-only js" {% if perfil_usuario.grupo == 'E' %}aria-live="polite" aria-atomic="true"{% endif %}>Foto [[fotoAtual]] de [[totalFotos]]</div>
+    <ul class="slidenav js">
+        <li>
+            <button id="btn-previous-slide" v-on:click="registrarBtnForm(event); ((fotoAtual > 1) ? (fotoAtual-=1) : (fotoAtual=totalFotos));" type="button" class="controles active btn-ant js">
+                <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <polyline points="15 6 9 12 15 18"></polyline>
+                </svg>
+                {% if perfil_usuario.grupo == 'E' %}
+                <span class="sr-only">Foto anterior</span>
+                {% else %}
+                <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão para </span>{% endif %}Anterior</span>
+                {% endif %}
+            </button>
+        </li>
+        <li class="js" v-for="n in totalFotos">
+            <button v-bind:id='"btn-slide-" + n' v-on:click="registrarBtnForm(event); (fotoAtual = n);" v-bind:class='(n == fotoAtual) ? "active btn-slide" : "btn-slide"' v-bind:data-slide='n-1'>
+                <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão para </span>{% endif %}{% if perfil_usuario.grupo == 'E' %}Anunciar Foto{% endif %} [[n]]</span> {% if perfil_usuario.grupo == 'E' %}<span v-if='n == fotoAtual' class="sr-only">(slide atual)</span>{% endif %}
+                <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <circle v-if="fotoAtual == n" cx="12" cy="12" r="8" fill="CurrentColor"></circle>
+                    <circle v-else cx="12" cy="12" r="8" fill="none" stroke="CurrentColor"></circle>
+                </svg>
+            </button>
+        </li>
+        <li>
+            <button id="btn-next-slide" v-on:click="registrarBtnForm(event); ((fotoAtual < totalFotos) ? (fotoAtual+=1) : (fotoAtual=1));" type="button" class="controles active btn-seg js">
+                <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <polyline points="9 6 15 12 9 18"></polyline>
+                </svg>
+                {% if perfil_usuario.grupo == 'E' %}
+                <span class="sr-only">Foto seguinte</span>
+                {% else %}
+                <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão para </span>{% endif %}Seguinte</span>
+                {% endif %}
+            </button>
+        </li>
+    </ul>
+</section>
+{% endif %}
+
+<div class="sobre-restaurante">
+    <{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} class="sr-only">Sobre o restaurante</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+    <p>{{ restaurante.sobre }}</p>
+    <{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} class="h2 pratos-famosos">Pratos mais famosos:</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+    <ul>
+        {% for prato in restaurante.pratos.all %}
+            {% if perfil_usuario.grupo == 'E' %}
+                <li>{{prato.nome|lower}}</li>
+            {% else %}
+                <li><a href="{% url 'index' %}?p={{ prato.id }}"><span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Listar restaurantes com </span>{{prato.nome}}<span class="sr-only"> como prato-chefe</span></a></li>
+            {% endif %}
+        {% empty %}
+            <li>Nenhum prato cadastrado para esse restaurante</li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+        <div id='message-box-success' tabindex='-1' class='message-box success'>
+            <div class="left">
+                <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <circle cx="12" cy="12" r="8"></circle>
+                    <path d="M9 12l2 2l4 -4"></path>
+                </svg>
+                {% if perfil_usuario.grupo == 'E' %}
+                    <span>{{ message }}</span>
+                {% else %}
+                    <span>Sucesso</span>
+                {% endif %}
+            </div>
+            <div class="right js">
+                <button id="btn-close-msg-success-{{ forloop.counter }}" v-on:click="registrarBtnForm" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+                    <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Fechar mensagem de sucesso</span>
+                    <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <circle cx="12" cy="12" r="8"></circle>
+                        <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{# Se houver avaliação do usuário e ele não a estiver editando... #}
+<div class="avaliacao-meio">
+    {% if avaliacaoUsuario and form.instance.pk == None %}
+    <section class="box-avaliacoes">
+        <{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} class="sr-only">Minha avaliação</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+        <{% if perfil_usuario.grupo == 'E' %}article{% else %}div{% endif %} id="opiniao-usuario" aria-labelledby="label-opiniao" class="article">
+            <div>
+                <{% if perfil_usuario.grupo == 'E' %}header{% else %}div{% endif %} class="header">
+                    <img class="round-image" width="100" height="100" src="{{MEDIA_URL}}{{avaliacaoUsuario.autor.perfil.foto_fantasia.endereco}}" alt="{% if perfil_usuario.grupo != 'E' %}Imagem, {% endif %}{{avaliacaoUsuario.autor.perfil.foto_fantasia.descricao}}" />
+                    <{% if perfil_usuario.grupo == 'E' %}h3{% else %}div{% endif %}  tabindex="0" class="h3 darkred" id="label-opiniao" ref="opiniao"><span class="sr-only">Opinião de </span>{{avaliacaoUsuario.autor.perfil.nome_fantasia}}</{% if perfil_usuario.grupo == 'E' %}h3{% else %}div{% endif %} >
+                </{% if perfil_usuario.grupo == 'E' %}header{% else %}div{% endif %}>
+                <p><q>{{avaliacaoUsuario.texto}}</q></p>
+            </div>
+            <{% if perfil_usuario.grupo == 'E' %}footer{% else %}div{% endif %} class="footer">
+                <p>{% if perfil_usuario.grupo == 'E' %}<span class="sr-only">Nota {{avaliacaoUsuario.nota}} de 5</span>{% endif %}<span class="red" {% if perfil_usuario.grupo == 'E' %}aria-hidden="true"{% endif %}>{% convertToStar avaliacaoUsuario.nota %}</span></p>
+                <p><small>({{avaliacaoUsuario.data|date:"d/m/Y"}})</small></p>
+                <div>
+                    <p>
+                        <a href="{% url 'editar_avaliacao' restaurante.id avaliacaoUsuario.id %}#label-avaliar">
+                            {% if perfil_usuario.grupo == 'E' %}
+                            <span class="sr-only">Editar minha avaliação</span>
+                            {% else %}
+                            <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Editar</span>
+                            {% endif %}
+                            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4"></path>
+                                <line x1="13.5" y1="6.5" x2="17.5" y2="10.5"></line>
+                            </svg>
+                        </a>
+                    </p>
+                    <p>
+                        <a v-on:click="confirmarExclusao($event)" href="{% url 'deletar_avaliacao' restaurante.id avaliacaoUsuario.id %}">
+                            {% if perfil_usuario.grupo == 'E' %}
+                            <span class="sr-only">Excluir minha avaliação</span>
+                            {% else %}
+                            <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Excluir</span>
+                            {% endif %}
+                            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <line x1="4" y1="7" x2="20" y2="7"></line>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
+                                <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
+                            </svg>
+                        </a>
+                    </p>
+                </div>
+            </{% if perfil_usuario.grupo == 'E' %}footer{% else %}div{% endif %}>
+        </{% if perfil_usuario.grupo == 'E' %}article{% else %}div{% endif %}>
+    </section>
+    {% else %}
+    <div id="container-avaliar">
+        <{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="label-avaliar" class="h2 darkred">{% if perfil_usuario.grupo == 'E' %}Já frequentou este restaurante? Avalie-o!{% else %}Avaliar{% endif %}</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+        {# Se houver erros de formulário em geral, e não de um campo específico #}
+        {% if form.non_field_errors %}
+            {# Apenas o grupo experimental pode ter acesso a esse ID, ou seja, apenas o grupo experimental vai ter associado, ao formulário, a mensagem de erro #}
+            <div {% if perfil_usuario.grupo == 'E' %}id="errors-form-non-field"{% endif %}>
+            {% for erro in form.non_field_errors %}
+                <div tabindex='-1' class='message-box error'>
+                    <span class="sr-only">Erro</span>
+                    <div class="left">
+                        <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <circle cx="12" cy="12" r="8"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        {% if perfil_usuario.grupo == 'E' %}
+                            <span>{{ erro }}</span>
+                        {% else %}
+                            <span>Erro</span>
+                        {% endif %}
+                    </div>
+                    <div class="right js">
+                        <button id="btn-close-msg-error-non-field-{{ forloop.counter }}" v-on:click="registrarBtnForm" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+                            <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Fechar mensagem de erro</span>
+                            <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <circle cx="12" cy="12" r="8"></circle>
+                                <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        
+        <form {% if not avaliacaoUsuario and form.instance.pk != None %}aria-labelledby="label-avaliar"{% endif %} {% if perfil_usuario.grupo == 'E' and form.non_field_errors %}aria-describedby="errors-form-non-field"{% endif %} method="post">
+            {% csrf_token %}
+            {{ form.autor }}
+            {{ form.restaurante }}
+
+            {% if form.texto.errors %}
+                {# Apenas o grupo experimental pode ter acesso a esse ID, ou seja, apenas o grupo experimental vai ter associado, ao campo, a mensagem de erro #}
+                <div {% if perfil_usuario.grupo == 'E' %}id="errors-form-texto"{% endif %}>
+                    {% for erro in form.texto.errors %}
+                        <div tabindex='-1' class='message-box error'>
+                            <span class="sr-only">Erro</span>
+                            <div class="left">
+                                <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="12" cy="12" r="8"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                {% if perfil_usuario.grupo == 'E' %}
+                                    <span>{{ erro }}</span>
+                                {% else %}
+                                    <span>Erro</span>
+                                {% endif %}
+                            </div>
+                            <div class="right js">
+                                <button id="btn-close-msg-error-texto-{{ forloop.counter }}" v-on:click="registrarBtnForm" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+                                    <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Fechar mensagem de erro</span>
+                                    <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <circle cx="12" cy="12" r="8"></circle>
+                                        <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="form-comentario">
+                <label id="avaliacao-label" for="{{ form.texto.id_for_label }}">
+                    <span class="span-div"><span>{% if perfil_usuario.grupo == 'E' %}Comentários{% else %}Avaliar{% endif %}</span><span {% if perfil_usuario.grupo == 'E' %}aria-live="polite" aria-atomic="true"{% endif %} class="js">[[ comentario.length ]] <span aria-hidden="true">/</span><span class="sr-only">de</span> 100 <span class="sr-only">caracteres</span></span></span>
+                    <span id="descricao-texto" {% if perfil_usuario.grupo != 'E' %}hidden{% endif %}>{% autoescape off %}{{ form.texto.help_text }}{% endautoescape %}</span>
+                </label>
+                {% if form.texto.errors and perfil_usuario.grupo == 'E' %}
+                {{ form.texto }}
+                {% else %}
+                {{ form.texto|remove_attr:"aria-describedby" }}
+                {% endif %}
+            </div>
+            {% if perfil_usuario.grupo != 'E' %}
+            <p class="notes">Atenção! Campo obrigatório. Mínimo de 10 caracteres.</p>
+            {% endif %}
+
+            {% if form.nota.errors %}
+                {# Apenas o grupo experimental pode ter acesso a esse ID, ou seja, apenas o grupo experimental vai ter associado, ao campo, a mensagem de erro #}
+                <div {% if perfil_usuario.grupo == 'E' %}id="errors-form-nota"{% endif %}>
+                    {% for erro in form.nota.errors %}
+                        <div tabindex='-1' class='message-box error'>
+                            <span class="sr-only">Erro</span>
+                            <div class="left">
+                                <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="12" cy="12" r="8"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                {% if perfil_usuario.grupo == 'E' %}
+                                    <span>{{ erro }}</span>
+                                {% else %}
+                                    <span>Erro</span>
+                                {% endif %}
+                            </div>
+                            <div class="right js">
+                                <button onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+                                    <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Fechar mensagem de erro</span>
+                                    <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <circle cx="12" cy="12" r="8"></circle>
+                                        <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <fieldset class="form-nota">
+                <legend>{% if perfil_usuario.grupo == 'E' %}{{ form.nota.label }}{% else %}Nota{% endif %} <span class='js' {% if perfil_usuario.grupo != 'E' %}hidden{% endif %}>[[notaExtenso]]</span></legend>
+                <div class="radio-group">
+                    {% if not form.nota.errors or perfil_usuario.grupo != 'E' %}
+                        {% for radio in form.nota|remove_attr:"aria-describedby" %}
+                        
+                        {{ radio.tag }}
+                        <label for="{{ radio.id_for_label }}">
+                            {% if perfil_usuario.grupo == 'E' %}
+                            <span id="{{ radio.choice_label|slugify }}" class="sr-only">
+                                {{ radio.choice_label }}
+                            </span>
+                            {% endif %}
+                            <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="currentColor" v-bind:fill="preenchimento" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path>
+                            </svg>
+                        </label>
+                        {% endfor %}
+                    {% else %}
+                        {% for radio in form.nota %}
+                            
+                        {{ radio.tag }}
+                        <label for="{{ radio.id_for_label }}">
+                            {% if perfil_usuario.grupo == 'E' %}
+                            <span id="{{ radio.choice_label|slugify }}" class="sr-only">
+                                {{ radio.choice_label }}
+                            </span>
+                            {% endif %}
+                            <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="currentColor" v-bind:fill="preenchimento" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path>
+                            </svg>
+                        </label>
+                        {% endfor %}                    
+                    {% endif %}
+                </div>
+            </fieldset>
+
+            <button class="form-btn-enviar" type="submit">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Avaliar{% if perfil_usuario.grupo == 'E' %} Restaurante{% endif %}</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+{% if avaliacoes.count > 0 %}
+<div id="container-avaliacoes">
+    <{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} id="label-avaliacoes" class="h2 darkred">O que as {% if avaliacaoUsuario is not None %}outras{% endif %} pessoas acham?</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+    <section aria-labelledby="label-avaliacoes" class="box-avaliacoes">
+        {% for avaliacao in avaliacoes %}
+        <{% if perfil_usuario.grupo == 'E' %}article{% else %}div{% endif %} class="article" aria-labelledby="label-opiniao{{ forloop.counter }}" v-if="{{ forloop.counter }} <= limite">
+            <div>
+                <{% if perfil_usuario.grupo == 'E' %}header{% else %}div{% endif %} class="header">
+                    <img class="round-image" width="80" height="80" src="{{MEDIA_URL}}{{avaliacao.autor.perfil.foto_fantasia.endereco}}" alt="{% if perfil_usuario.grupo != 'E' %}Imagem, {% endif %}{{avaliacao.autor.perfil.foto_fantasia.descricao}}" />
+                    <{% if perfil_usuario.grupo == 'E' %}h3{% else %}div{% endif %}  tabindex="0" class="h3 darkred" id="label-opiniao{{ forloop.counter }}" ref="opiniao{{ forloop.counter }}"><span class="sr-only">Opinião de </span>{{avaliacao.autor.perfil.nome_fantasia}}</{% if perfil_usuario.grupo == 'E' %}h3{% else %}div{% endif %} >
+                </{% if perfil_usuario.grupo == 'E' %}header{% else %}div{% endif %}>
+                <p><q>{{avaliacao.texto}}</q></p>
+            </div>
+            <{% if perfil_usuario.grupo == 'E' %}footer{% else %}div{% endif %} class="footer">
+                <p>{% if perfil_usuario.grupo == 'E' %}<span class="sr-only">Nota {{avaliacao.nota}} de 5</span>{% endif %}<span class="red" {% if perfil_usuario.grupo == 'E' %}aria-hidden="true"{% endif %}>{% convertToStar avaliacao.nota %}</span></p>
+                <p><small>({{avaliacao.data|date:"d/m/Y"}})</small></p>
+            </{% if perfil_usuario.grupo == 'E' %}footer{% else %}div{% endif %}>
+        </{% if perfil_usuario.grupo == 'E' %}article{% else %}div{% endif %}>
+        {% endfor %}
+    </section>
+    <nav id="nav-load-more" class="js margin-extended">
+        <button v-if="limite < {{ avaliacoes|length }}" class="btn-carregar-mais js" id="btn-load-more-restaurants" v-on:click="registrarBtnForm(event); exibeMaisAvaliacoes()"><span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Carregar</span>Mais avaliações</button>
+    </nav>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const main = new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data: {
+            limite: 3,
+            fotos: [
+                {% if restaurante.fotos.exists %}{% for foto in restaurante.fotos.all %}{endereco: '{{MEDIA_URL}}{{ foto.endereco }}', descricao: '{% if perfil_usuario.grupo != "E" %}Imagem, {% endif %}{{ foto.descricao }}'},{% endfor %}{% endif %}
+            ],
+            fotoAtual: 1,
+            totalFotos: {% if restaurante.fotos.exists %}{{ restaurante.fotos.all|length }}{% else %}0{% endif %},
+            radioNota: {{ form.nota.value|default_if_none:0 }},
+            comentario: '{% if form.texto.value is not None %}{{ form.texto.value }}{% endif %}',
+        },
+        mounted() {
+            {% if form.nota.value is None %}
+            {# Desmarca a nota 5, que vem marcada por padrão para aqueles que não têm JS ativo no navegador #}
+            if(null != this.$el.querySelector('#id_nota_4'))
+                this.$el.querySelector('#id_nota_4').toggleAttribute('checked');
+            {% endif %}
+        },
+        methods: {
+            registrarMudancaInputForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.target.id);
+                parametros.append('val', event.target.value);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+            registrarMudancaCheckForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.target.id);
+                parametros.append('val', event.target.value);
+                parametros.append('chkd', event.target.checked);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+            registrarBtnForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.currentTarget.id);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+            confirmarExclusao(event) {
+                let confirmacao = confirm('Você quer mesmo excluir sua avaliação?');
+                if (!confirmacao)
+                    event.preventDefault();
+            },
+            exibeMaisAvaliacoes() {
+                let aux = this.limite+1;
+                this.limite+=3;
+                this.$nextTick(() => {
+                    this.$refs['opiniao'+aux].focus();
+                });
+            }
+        },
+        computed: {
+            preenchimento: function() {
+                return (this.radioNota == 0) ? ('none') : ('currentColor');
+            },
+            notaExtenso: function() {
+                if (this.radioNota == 0)
+                    return '(Selecione uma nota)';
+                else if (this.radioNota == 1)
+                    return '(Ruim)';
+                else if (this.radioNota == 2)
+                    return '(Regular)';
+                else if (this.radioNota == 3)
+                    return '(Bom)';
+                else if (this.radioNota == 4)
+                    return '(Ótimo)';
+                else
+                    return '(Excelente)';
+            }
+        }
+    });
+</script>
+{% endblock %}

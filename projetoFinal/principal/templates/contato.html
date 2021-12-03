@@ -1,0 +1,144 @@
+{% extends "base_logado.html" %}
+{% load widget_tweaks %}
+
+{% block titulo_header %}{{ tipo_contato|capfirst }} - Come{% endblock %}
+
+{% block titulo_body %}{{ tipo_contato|capfirst }}{% endblock %}
+
+{% block conteudo_principal %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+            <div tabindex='-1' class='message-box success'>
+                <div class="left">
+                    <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <path d="M9 12l2 2l4 -4"></path>
+                    </svg>
+                    {% if perfil_usuario.grupo == 'E' %}
+                        <span>{{ message }}</span>
+                    {% else %}
+                        <span>Sucesso</span>
+                    {% endif %}
+                    
+                </div>
+                <div class="right js">
+                    <button id="btn-close-msg-success-{{ forloop.counter }}" v-on:click="registrarBtnForm" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+                        <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Fechar mensagem de sucesso</span>
+                        <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <p class="contact-text">Prezado {{ perfil_usuario.nome_fantasia }}, esperamos que esteja gostando de sua experiência aqui, no site. Nós, da equipe, ficamos muito felizes de saber que você quer nos contatar. Afinal, é graças ao <span lang="en">feedback</span> de usuários como você que podemos oferecer um serviço cada vez melhor. Então, não se segure: conte-nos tudo que deseja!</p>
+    <form method="post">
+        {% csrf_token %}
+        {% if form.mensagem.errors %}
+                {# Apenas o grupo experimental pode ter acesso a esse ID, ou seja, apenas o grupo experimental vai ter associado, ao campo, a mensagem de erro #}
+                <div {% if perfil_usuario.grupo == 'E' %}id="errors-form-mensagem"{% endif %}>
+                    {% for erro in form.mensagem.errors %}
+                        <div tabindex='-1' class='message-box error'>
+                            <span class="sr-only">Erro</span>
+                            <div class="left">
+                                <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                {% if perfil_usuario.grupo == 'E' %}
+                                    <span>{{ erro }}</span>
+                                {% else %}
+                                    <span>Erro</span>
+                                {% endif %}
+                            </div>
+                            <div class="right js">
+                                <button id="btn-close-msg-error-mensagem-{{ forloop.counter }}" v-on:click="registrarBtnForm" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+                                    <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Fechar mensagem de erro</span>
+                                    <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <circle cx="12" cy="12" r="9"></circle>
+                                        <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        <div class="contato">        
+            <label for="{{ form.mensagem.id_for_label }}">
+                <span>
+                    {% if perfil_usuario.grupo == 'E' %}
+                        {% if tipo_contato != 'contato' %}
+                            Por favor, digite sua {{ tipo_contato }}:
+                        {% else %}
+                            Por favor, digite sua mensagem:
+                        {% endif %}
+                    {% else %}
+                        Mensagem
+                    {% endif %}
+                    <span {% if perfil_usuario.grupo == 'E' %}aria-live="polite" aria-atomic="true"{% endif %} class="js">
+                        [[ mensagem.length ]] <span class="sr-only">caracteres</span>
+                    </span>
+                </span>
+                <span id="form-mensagem-help-text" class="help-text"{% if perfil_usuario.grupo != 'E' %} hidden{% endif %}>{{ form.mensagem.help_text }}</span>
+            </label>
+
+            {% if form.mensagem.errors and perfil_usuario.grupo == 'E' %}
+            {{ form.mensagem }}
+            {% else %}
+            {{ form.mensagem|remove_attr:"aria-describedby" }}
+            {% endif %}
+        </div>
+        {% if perfil_usuario.grupo != 'E' %}
+        <p class="notes">Atenção! Seja sucinto, mas escreva, no mínimo, 25 caracteres.</p>
+        {% endif %}
+        <button class="btn btn-enviar-mensagem" type="submit">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Enviar</button>
+    </form>
+    
+    <img class="img-contato" loading="lazy" src="{{ MEDIA_URL }}{{ imagem.endereco }}" alt="{% if perfil_usuario.grupo != 'E' %}Imagem, {% endif %}{{ imagem.descricao }}" />
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const main = new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data: {
+            mensagem: '',
+        },
+        mounted() {
+            {% if perfil_usuario.grupo == 'E' %}
+            this.$el.querySelector('.message-box').focus();
+            {% endif %}
+        },
+        methods: {
+            registrarMudancaInputForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.target.id);
+                parametros.append('val', event.target.value);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+            registrarBtnForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.currentTarget.id);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+        },
+    });
+</script>
+{% endblock %}

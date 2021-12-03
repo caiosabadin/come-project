@@ -1,0 +1,79 @@
+{% extends "base_logado.html" %}
+
+{% block titulo_header %}Eventos - Come{% endblock %}
+
+{% block titulo_body %}Eventos{% endblock %}
+
+{% block conteudo_principal %}
+<p class="events">Caramba, que azar! No momento, não está ocorrendo nenhum evento por aqui. Tudo está bastante quieto. Como diria a poetisa japonesa Chiyo-jo: <q>campos, montanhas, nada se move: manhã de neve.</q> Tudo parado, nenhum evento. Uma pena, né? Só que isso não é motivo de tristeza. Siga-nos em nossas redes sociais! Além de um desconto de vez em quando, assim que começarmos um evento, você fica sabendo dele na hora e já pode aproveitar para se inscrever e participar {% if perfil_usuario.grupo == 'E' %}😉{% else %};-]{% endif %}</p>
+
+<div class="sm-buttons">
+    <a v-on:click="registrarAncoraClick(event)" id="link-twitter" href="https://twitter.com" class="tt">
+        <svg aria-labelledby="btn-tt" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <title id="btn-tt" class="sr-only">{% if perfil_usuario.grupo != 'E' %}Link para {% endif %}Twitter</title>
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path fill="currentColor" d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z"></path>
+        </svg>
+    </a>
+
+    <a v-on:click="registrarAncoraClick(event)" id="link-facebook" href="https://facebook.com" class="fb">
+        <svg aria-labelledby="btn-fb" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <title id="btn-fb" class="sr-only">{% if perfil_usuario.grupo != 'E' %}Link para {% endif %}Facebook</title>
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path fill="currentColor" d="M7 10v4h3v7h4v-7h3l1 -4h-4v-2a1 1 0 0 1 1 -1h3v-4h-3a5 5 0 0 0 -5 5v2h-3"></path>
+        </svg>
+    </a>
+
+    <a v-on:click="registrarAncoraClick(event)" id="link-instagram" href="https://instagram.com" class="ig">
+        <svg aria-labelledby="btn-ig" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <title id="btn-ig" class="sr-only">{% if perfil_usuario.grupo != 'E' %}Link para {% endif %}Instagram</title>
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <rect x="4" y="4" width="16" height="16" rx="4"></rect>
+            <circle cx="12" cy="12" r="3"></circle>
+            <line x1="16.5" y1="7.5" x2="16.5" y2="7.501"></line>
+        </svg>
+    </a>
+
+    <a v-on:click="registrarAncoraClick(event)" id="link-linkedin" href="https://linkedin.com/" class="in">
+        <svg aria-labelledby="btn-in" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <title id="btn-in" class="sr-only">{% if perfil_usuario.grupo != 'E' %}Link para {% endif %}LinkedIn</title>
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+            <line x1="8" y1="11" x2="8" y2="16"></line>
+            <line x1="8" y1="8" x2="8" y2="8.01"></line>
+            <line x1="12" y1="16" x2="12" y2="11"></line>
+            <path d="M16 16v-3a2 2 0 0 0 -4 0"></path>
+        </svg>
+    </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const main = new Vue({
+            el: '#app',
+            delimiters: ['[[', ']]'],
+            data: {
+                isIndexShown: true,
+            },
+            methods: {
+                registrarMudancaInputForm(event) {
+                    let urlAtual = new URL(window.location.href);
+                    let parametros = new URLSearchParams('');
+                    parametros.append('path', urlAtual.pathname);
+                    parametros.append('el', '#' + event.target.id);
+                    parametros.append('val', event.target.value);
+                    console.log(event);
+                    fetch("{% url 'log' %}" + '?' + parametros.toString());
+                },
+                registrarAncoraClick(event) {
+                    let urlAtual = new URL(window.location.href);
+                    let parametros = new URLSearchParams('');
+                    parametros.append('path', urlAtual.pathname);
+                    parametros.append('el', '#' + event.currentTarget.id);
+                    fetch("{% url 'log' %}" + '?' + parametros.toString());
+                },
+            }
+        });
+    </script>
+{% endblock %}

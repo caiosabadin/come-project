@@ -1,0 +1,382 @@
+{% extends "base_logado.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% load custom_tags %}
+
+{% block titulo_header %}
+{% if perfil_usuario.grupo == 'E' %}
+Edição de perfil - Come
+{% else %}
+Editar - Come
+{% endif %}
+{% endblock %}
+
+{% block additional_resources %}
+<script type="text/javascript" src="{% static 'js/accessible-autocomplete.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/accessible-autocomplete.css' %}" />
+{% endblock %}
+
+{% block titulo_body %}
+{% if perfil_usuario.grupo == 'E' %}
+Edição de perfil
+{% else %}
+Editar
+{% endif %}
+{% endblock %}
+
+{% block conteudo_principal %}
+<section class="edit-profile">
+    <form method="post">
+        {% csrf_token %}
+
+        <fieldset>
+            <legend>{% if perfil_usuario.grupo == 'E' %}{{ form.foto_fantasia.label }}{% else %}Foto{% endif %}</legend>
+            <p id="form-foto_fantasia-help-text"{% if perfil_usuario.grupo != 'E' %} hidden{% endif %}>{{ form.foto_fantasia.help_text }}</p>
+
+            {% if form.foto_fantasia.errors %}
+                {# Apenas o grupo experimental pode ter acesso a esse ID, ou seja, apenas o grupo experimental vai ter associado, ao campo, a mensagem de erro #}
+                <div {% if perfil_usuario.grupo == 'E' %}id="errors-form-foto_fantasia"{% endif %}>
+                    {% for erro in form.foto_fantasia.errors %}
+                        <div tabindex='-1' class='message-box error'>
+                            <span class="sr-only">Erro</span>
+                            <div class="left">
+                                <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                {% if perfil_usuario.grupo == 'E' %}
+                                    <span>{{ erro }}</span>
+                                {% else %}
+                                    <span>Erro</span>
+                                {% endif %}
+                            </div>
+                            <div class="right js">
+                                <button id="btn-close-msg-error-foto_fantasia-{{ forloop.counter }}" v-on:click="registrarBtnForm" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+                                    <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Fechar mensagem de erro</span>
+                                    <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <circle cx="12" cy="12" r="9"></circle>
+                                        <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="image-select">
+            {% if not form.foto_fantasia.errors or perfil_usuario.grupo != 'E' %}
+                {% for radio in form.foto_fantasia|remove_attr:"aria-describedby" %}
+                    {% if radio.data.value == form.foto_fantasia.value %}
+                        {% autoescape off %}
+                            {{ radio.tag }}<label class="current" for="{{ radio.id_for_label }}">{% if perfil_usuario.grupo == 'E' %}<span class='sr-only'>Imagem atual</span>{% endif %}<img class="round-image" width="60" height="60" {{ radio.choice_label }} /></label>
+                        {% endautoescape %}
+                    {% endif %}
+                {% endfor %}
+                {% for radio in form.foto_fantasia|remove_attr:"aria-describedby" %}
+                    {% if radio.data.value != form.foto_fantasia.value %}
+                        {% autoescape off %}
+                            {{ radio.tag }}<label for="{{ radio.id_for_label }}"><img class="round-image" width="60" height="60" {{ radio.choice_label }} /></label>
+                        {% endautoescape %}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% for radio in form.foto_fantasia %}
+                    {% if radio.data.value == form.foto_fantasia.value %}
+                        {% autoescape off %}
+                            {{ radio.tag }}<label class="current" for="{{ radio.id_for_label }}">{% if perfil_usuario.grupo == 'E' %}<span class='sr-only'>Imagem atual</span>{% endif %}<img class="round-image" width="60" height="60" {{ radio.choice_label }} /></label>
+                        {% endautoescape %}
+                    {% endif %}
+                {% endfor %}
+                {% for radio in form.foto_fantasia %}
+                    {% if radio.data.value != form.foto_fantasia.value %}
+                        {% autoescape off %}
+                            {{ radio.tag }}<label for="{{ radio.id_for_label }}"><img class="round-image" width="60" height="60" {{ radio.choice_label }} /></label>
+                        {% endautoescape %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            </div>
+        </fieldset>
+
+        <div class="input-field">
+            {% if form.prato_preferido.errors %}
+                {# Apenas o grupo experimental pode ter acesso a esse ID, ou seja, apenas o grupo experimental vai ter associado, ao campo, a mensagem de erro #}
+                <div {% if perfil_usuario.grupo == 'E' %}id="errors-form-prato_preferido"{% endif %}>
+                    {% for erro in form.prato_preferido.errors %}
+                        <div tabindex='-1' class='message-box error reduced-margin'>
+                            <span class="sr-only">Erro</span>
+                            <div class="left">
+                                <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                {% if perfil_usuario.grupo == 'E' %}
+                                    <span>{{ erro }}</span>
+                                {% else %}
+                                    <span>Erro</span>
+                                {% endif %}
+                            </div>
+                            <div class="right js">
+                                <button id="btn-close-msg-error-prato_preferido-{{ forloop.counter }}" v-on:click="registrarBtnForm" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+                                    <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Fechar mensagem de erro</span>
+                                    <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <circle cx="12" cy="12" r="9"></circle>
+                                        <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div v-on:focusout="registrarMudancaInputFormAdaptado" class="dish-select">
+                <label for="{{ form.prato_preferido.id_for_label }}">
+                    <span>{{ form.prato_preferido.label }}</span>
+                    <span id="form-prato_preferido-help-text" class="help-text"{% if perfil_usuario.grupo != 'E' %} hidden{% endif %}>{{ form.prato_preferido.help_text }}</span>
+                </label>
+                {% if form.prato_preferido.errors and perfil_usuario.grupo == 'E' %}
+                {{ form.prato_preferido }}
+                {% else %}
+                {{ form.prato_preferido|remove_attr:"aria-describedby" }}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="input-field">
+            {% if form.data_nascimento_fantasia.errors %}
+                {# Apenas o grupo experimental pode ter acesso a esse ID, ou seja, apenas o grupo experimental vai ter associado, ao campo, a mensagem de erro #}
+                <div {% if perfil_usuario.grupo == 'E' %}id="errors-form-data_nascimento_fantasia"{% endif %}>
+                    {% for erro in form.data_nascimento_fantasia.errors %}
+                        <div tabindex='-1' class='message-box error reduced-margin'>
+                            <span class="sr-only">Erro</span>
+                            <div class="left">
+                                <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                {% if perfil_usuario.grupo == 'E' %}
+                                    <span>{{ erro }}</span>
+                                {% else %}
+                                    <span>Erro</span>
+                                {% endif %}
+                            </div>
+                            <div class="right js">
+                                <button id="btn-close-msg-error-data_nascimento_fantasia-{{ forloop.counter }}" v-on:click="registrarBtnForm" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+                                    <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Fechar mensagem de erro</span>
+                                    <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <circle cx="12" cy="12" r="9"></circle>
+                                        <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="date-select">
+                <label for="{{ form.data_nascimento_fantasia.id_for_label }}">
+                    <span>{{ form.data_nascimento_fantasia.label }}</span>
+                    <span id="form-data_nascimento_fantasia-help-text" class="help-text"{% if perfil_usuario.grupo != 'E' %} hidden{% endif %}>{{ form.data_nascimento_fantasia.help_text }}</span>
+                </label>
+                {% if form.data_nascimento_fantasia.errors and perfil_usuario.grupo == 'E' %}
+                {{ form.data_nascimento_fantasia }}
+                {% else %}
+                {{ form.data_nascimento_fantasia|remove_attr:"aria-describedby" }}
+                {% endif %}
+            </div>
+            {% if perfil_usuario.grupo != 'E' %}<p class="notes">Atenção! Informe a data 21/11/2027</p>{% endif %}
+        </div>
+
+        <div class="input-field">
+            {% if form.culinaria_favorita_fantasia.errors %}
+                {# Apenas o grupo experimental pode ter acesso a esse ID, ou seja, apenas o grupo experimental vai ter associado, ao campo, a mensagem de erro #}
+                <div {% if perfil_usuario.grupo == 'E' %}id="errors-form-culinaria_favorita_fantasia"{% endif %}>
+                    {% for erro in form.culinaria_favorita_fantasia.errors %}
+                        <div tabindex='-1' class='message-box error reduced-margin'>
+                            <span class="sr-only">Erro</span>
+                            <div class="left">
+                                <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                {% if perfil_usuario.grupo == 'E' %}
+                                    <span>{{ erro }}</span>
+                                {% else %}
+                                    <span>Erro</span>
+                                {% endif %}
+                            </div>
+                            <div class="right js">
+                                <button id="btn-close-msg-error-culinaria_favorita_fantasia-{{ forloop.counter }}" v-on:click="registrarBtnForm" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+                                    <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Fechar mensagem de erro</span>
+                                    <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <circle cx="12" cy="12" r="9"></circle>
+                                        <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="cusine-select">
+                <label for="{{ form.culinaria_favorita_fantasia.id_for_label }}">
+                    <span>{{ form.culinaria_favorita_fantasia.label }}</span>
+                    <span id="form-culinaria_favorita_fantasia-help-text" class="help-text"{% if perfil_usuario.grupo != 'E' %} hidden{% endif %}>{{ form.culinaria_favorita_fantasia.help_text }}</span>
+                </label>
+                {% if form.culinaria_favorita_fantasia.errors and perfil_usuario.grupo == 'E' %}
+                {{ form.culinaria_favorita_fantasia }}
+                {% else %}
+                {{ form.culinaria_favorita_fantasia|remove_attr:"aria-describedby" }}
+                {% endif %}
+            </div>
+
+            {% if perfil_usuario.grupo != 'E' %}<p class="notes">Atenção! Selecione a culinária italiana</p>{% endif %}
+        </div>
+
+        <fieldset class="quote-select">
+            <legend>{% if perfil_usuario.grupo == 'E' %}{{ form.frase_bio.label }}{% else %}Citação{% endif %}</legend>
+            <p id="form-frase_bio-help-text"{% if perfil_usuario.grupo != 'E' %} hidden{% endif %}>{{ form.frase_bio.help_text }}</p>
+            
+            {% if form.frase_bio.errors %}
+                {# Apenas o grupo experimental pode ter acesso a esse ID, ou seja, apenas o grupo experimental vai ter associado, ao campo, a mensagem de erro #}
+                <div {% if perfil_usuario.grupo == 'E' %}id="errors-form-frase_bio"{% endif %}>
+                    {% for erro in form.frase_bio.errors %}
+                        <div tabindex='-1' class='message-box error'>
+                            <span class="sr-only">Erro</span>
+                            <div class="left">
+                                <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                {% if perfil_usuario.grupo == 'E' %}
+                                    <span>{{ erro }}</span>
+                                {% else %}
+                                    <span>Erro</span>
+                                {% endif %}
+                            </div>
+                            <div class="right js">
+                                <button id="btn-close-msg-error-frase_bio-{{ forloop.counter }}" v-on:click="registrarBtnForm" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement)">
+                                    <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}Fechar mensagem de erro</span>
+                                    <svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <circle cx="12" cy="12" r="9"></circle>
+                                        <path class="x" d="M10 10l4 4m0 -4l-4 4"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="grid quotes">
+                {% autoescape off %}
+                {% if not form.frase_bio.errors or perfil_usuario.grupo != 'E' %}
+                    {% for radio in form.frase_bio|remove_attr:"aria-describedby" %}
+                        {% if radio.data.value == form.frase_bio.value %}
+                            <div>
+                                {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% for radio in form.frase_bio|remove_attr:"aria-describedby" %}
+                        {% if radio.data.value != form.frase_bio.value %}
+                        <div>
+                            {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    {% for radio in form.frase_bio %}
+                        {% if radio.data.value == form.frase_bio.value %}
+                            <div>
+                                {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% for radio in form.frase_bio %}
+                        {% if radio.data.value != form.frase_bio.value %}
+                        <div>
+                            {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {% endautoescape %}
+            </div>
+        </fieldset>
+
+        <button class="btn btn-editar-perfil" type="submit">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão de </span>{% endif %}{% if perfil_usuario.grupo == 'E' %}Atualizar Perfil{% else %}Editar{% endif %}</button>
+    </form>    
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const main = new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        mounted() {
+            {% if perfil_usuario.grupo == 'E' %}
+            this.$el.querySelector('.dish-select').classList.add('enhanced');
+            let picker = this.$el.querySelector('#prato-preferido-picker');
+            accessibleAutocomplete.enhanceSelectElement({
+                selectElement: picker,
+                minLength: 3,
+                displayMenu: 'overlay',
+                required: true,
+            });
+            picker.setAttribute('v-on:blur', 'registrarMudancaInputForm');
+            this.$el.querySelector('.message-box').focus();
+            {% endif %}
+        },
+        methods: {
+            registrarMudancaInputFormAdaptado(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + this.$el.querySelector('#prato-preferido-picker').id);
+                parametros.append('val', this.$el.querySelector('#prato-preferido-picker').value);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+            registrarMudancaInputForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.target.id);
+                parametros.append('val', event.target.value);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+            registrarMudancaCheckForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.target.id);
+                parametros.append('val', event.target.value);
+                parametros.append('chkd', event.target.checked);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+            registrarBtnForm(event) {
+                let urlAtual = new URL(window.location.href);
+                let parametros = new URLSearchParams('');
+                parametros.append('path', urlAtual.pathname);
+                parametros.append('el', '#' + event.currentTarget.id);
+                fetch("{% url 'log' %}" + '?' + parametros.toString());
+            },
+        }
+    });
+</script>
+{% endblock %}

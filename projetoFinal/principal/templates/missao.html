@@ -1,0 +1,14 @@
+{% extends "base_logado.html" %}
+
+{% block titulo_header %}Missão - Come{% endblock %}
+
+{% block titulo_body %}Missão{% endblock %}
+
+{% block conteudo_principal %}
+<p>Nós, da <strong>Come</strong>, temos como missão ajudar as pessoas a encontrarem o melhor lugar para fazerem sua refeição. Porque acreditamos que tudo é mais do que uma simples paixão pela comida. É sobre os momentos de união, de intimidade e de aproximação que surgem quando nos sentamos à mesa com quem a gente ama &mdash; trocando boas risadas com amigos, sendo acolhido por nossa família, desfrutando de um romance. Uma boa refeição é fundamental às relações, à satisfação e ao bem-estar. É parte fundamental daquilo que faz com que sejamos o que somos. Parte fundamental do que nos torna humanos.</p>
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} class="h2 mission">Visão</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+<p>Ser o principal sistema de busca de restaurantes do sul e sudeste do Brasil, ao dispor de um atendimento personalizado de altíssima qualidade, oferecendo um serviço seguro, efetivo, e com ótima experiência de uso para os clientes.</p>
+<{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %} class="h2 mission">Valores</{% if perfil_usuario.grupo == 'E' %}h2{% else %}div{% endif %}>
+<p>Na <strong>Come</strong>, acreditamos que a criatividade e a inovação sejam os principais motores para se mudar o mundo e torná-lo um lugar melhor para todos. E, para suscitar essa inovação, há que se investir na pluralidade e diversidade de ideias e pessoas. E é com este time de pessoas únicas e com responsabilidade social, ética, transparência e foco no cliente que seguimos pioneiros em nossos negócios.</p>
+<img class="img-missao" loading="lazy" src="{{ MEDIA_URL }}{{ imagem.endereco }}" alt="{% if perfil_usuario.grupo != 'E' %}Imagem, {% endif %}{{ imagem.descricao }}" />
+{% endblock %}

@@ -1,0 +1,13 @@
+.js {
+    display:none !important;
+}
+
+.no-js {
+    display:block !important;
+}
+
+ul.no-js {
+    display:flex !important;
+    margin-top:1.5em;
+    margin-bottom:1.5em;
+}

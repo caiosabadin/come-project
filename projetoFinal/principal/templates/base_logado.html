@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>{% block titulo_header %}{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Oleo+Script:wght@700&display=swap" rel="stylesheet" /> 
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link rel="stylesheet" href="{% static 'css/normalise.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+        <noscript><link rel="stylesheet" href="{% static 'css/noscript.css' %}" /></noscript>
+        <script src="{% static 'js/vue.js' %}"></script>
+        {% block additional_resources %}{% endblock %}
+    </head>
+    <body>
+    <div id="app">
+        {% block skiplinks %}
+        <{% if perfil_usuario.grupo == 'E' %}nav{% else %}div{% endif %} class="nav" id="skiplinks-box" role="navigation" aria-label="Links para saltar conteúdo">
+            <a class="skiplinks" accesskey="1" href="#h1">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Ir para o conteúdo principal [1]</a>
+            <a class="skiplinks" accesskey="2" href="#caixa-busca">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Ir para a busca [2]</a>
+            <a class="skiplinks" accesskey="3" href="#navegacao-principal">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Ir para a navegação principal [3]</a>
+            <a class="skiplinks" accesskey="4" href="#rodape">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Ir para o rodapé [4]</a>
+        </{% if perfil_usuario.grupo == 'E' %}nav{% else %}div{% endif %}>
+        {% endblock %}
+        <{% if perfil_usuario.grupo == 'E' %}header{% else %}div{% endif %} class="header" {% if perfil_usuario.grupo == 'E' %}aria-labelledby="nome-site"{% endif %} role="banner" id="logotipo-come">
+                <div>
+                    <a id="nome-site" href="{% url 'index' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Come</a>
+                </div>
+                {% block caixaBusca %}
+                <form {% if perfil_usuario.grupo == 'E' %}aria-labelledby="label-form-busca"{% endif %} id="form-busca" method="get" action="/">
+                    <span id="label-form-busca" class="sr-only">Encontre restaurantes</span>
+                    <label class="sr-only" for="caixa-busca">{% if perfil_usuario.grupo == 'E' %}Digite nomes de {% endif %}restaurantes{% if perfil_usuario.grupo == 'E' %} ou de pratos, separados por espaços{% endif %}</label>
+                    <input v-on:focusout="registrarMudancaInputForm" ref="b" type="text" name="b" id="caixa-busca" placeholder="Buscar..." />
+                    <button id="btn-busca-header" type="submit"><svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg> {% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Botão para </span>{% endif %}<span class="sr-only">Procurar{% if perfil_usuario.grupo == 'E' %} Restaurantes{% endif %}</span></button>
+                </form>
+                {% endblock %}
+        </{% if perfil_usuario.grupo == 'E' %}header{% else %}div{% endif %}>
+        <div class="section" id="wrapper">
+            <div id="box">
+                <{% if perfil_usuario.grupo == 'E' %}main{% else %}div{% endif %} class="main" id="main-content" role="main" aria-labelledby="h1">
+                    <{% if perfil_usuario.grupo == 'E' %}header{% else %}div{% endif %} class="header" {% if perfil_usuario.grupo == 'E' %}aria-labelledby="h1"{% endif %}>
+                        <h1 id="h1">{% block titulo_body %}{% endblock %}</h1>
+                        {% block extras_header %}{% endblock %}
+                    </{% if perfil_usuario.grupo == 'E' %}header{% else %}div{% endif %}>
+                    <div class="section" id="box-main-content">
+                        {% block conteudo_principal %}{% endblock %}
+                    </div>
+                </{% if perfil_usuario.grupo == 'E' %}main{% else %}div{% endif %}>
+                {% block navegacao_principal %}
+                <{% if perfil_usuario.grupo == 'E' %}nav{% else %}div{% endif %} class="nav" role="navigation" id="navegacao-principal" {% if perfil_usuario.grupo == 'E' %}aria-labelledby="label-navegacao-principal"{% endif %}>
+                    <h2 id="label-navegacao-principal" class="sr-only">Navegação Principal</h2>
+                    <div class="nav-wrapper">
+                        <div class="nav-item">
+                            <a href="{% url 'index' %}">
+                                <svg class="house-icon" focusable="false" aria-hidden="true" width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <polyline points="5 12 3 12 12 3 21 12 19 12"></polyline>
+                                    <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"></path>
+                                    <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"></path>
+                                </svg>
+                                <span class="sr-only">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Página inicial</span><span aria-hidden="true">Home</span>
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a href="{% url 'visualizar_perfil' %}">
+                                <svg class="person-icon" focusable="false" aria-hidden="true" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                {% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Perfil
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a href="{% url 'cozinhas' %}">
+                                <svg class="pizza-icon" focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M12 21.5c-3.04 0 -5.952 -.714 -8.5 -1.983l8.5 -16.517l8.5 16.517a19.09 19.09 0 0 1 -8.5 1.983z"></path>
+                                    <path d="M5.38 15.866a14.94 14.94 0 0 0 6.815 1.634a14.944 14.944 0 0 0 6.502 -1.479"></path>
+                                    <path d="M13 11.01v-.01"></path>
+                                    <path d="M11 14v-.01"></path>
+                                </svg>
+                                {% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Pratos
+                            </a>
+                        </div>
+                        <div class="nav-item">
+                            <a href="{% url 'logout' %}">
+                                <svg class="logout-icon" focusable="false" aria-hidden="true" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                {% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Sair
+                            </a>
+                        </div>
+                    </div>
+                </{% if perfil_usuario.grupo == 'E' %}nav{% else %}div{% endif %}>
+                {% endblock %}
+            </div>
+        </div>
+        {% block rodape %}
+        <{% if perfil_usuario.grupo == 'E' %}footer{% else %}div{% endif %} class="footer" id="rodape" role="contentinfo">
+                {% if perfil_usuario.grupo == 'E' %}
+                <nav role="navigation" aria-labelledby="footer-help" class="nav box">
+                {% else %}
+                <div role="navigation" class="box">
+                {% endif %}
+                    <h2 id="footer-help">Ajuda</h2>
+                    <ul {% if perfil_usuario.grupo == 'E' %}aria-labelledby="footer-help"{% endif %}>
+                        <li><a href="{% url 'mapa' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Mapa{% if perfil_usuario.grupo == 'E' %} do site{% endif %}</a></li>
+                        <li><a href="{% url 'perguntas_frequentes' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}{% if perfil_usuario.grupo == 'E' %}Perguntas frequentes{% else %}FAQ{% endif %}</a></li>
+                        <li><a href="{% url 'acessibilidade' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Acessibilidade</a></li>
+                        <li><a href="{% url 'incluir_estabelecimento' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Incluir estabelecimento</a></li>
+                    </ul>
+                {% if perfil_usuario.grupo == 'E' %}
+                </nav>
+                {% else %}
+                </div>
+                {% endif %}
+                {% if perfil_usuario.grupo == 'E' %}
+                <nav role="navigation" aria-labelledby="footer-reachout" class="nav box">
+                {% else %}
+                <div role="navigation" class="box">
+                {% endif %}
+                    <h2 id="footer-reachout">Contato</h2>
+                    <ul {% if perfil_usuario.grupo == 'E' %}aria-labelledby="footer-reachout"{% endif %}>
+                        <li><a href="{% url 'enviar_mensagem' 'sugestao' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Sugestões</a></li>
+                        <li><a href="{% url 'enviar_mensagem' 'duvida' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Dúvidas</a></li>
+                        <li><a href="{% url 'enviar_mensagem' 'reclamacao' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Reclamações</a></li>
+                        <li><a href="{% url 'enviar_mensagem' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}{% if perfil_usuario.grupo == 'E' %}Fale conosco{% else %}Outros{% endif %}</a></li>
+                    </ul>
+                {% if perfil_usuario.grupo == 'E' %}
+                </nav>
+                {% else %}
+                </div>
+                {% endif %}
+                {% if perfil_usuario.grupo == 'E' %}
+                <nav role="navigation" aria-labelledby="footer-about" class="nav box">
+                {% else %}
+                <div role="navigation" class="box">
+                {% endif %}
+                    <h2 id="footer-about">Sobre nós</h2>
+                    <ul {% if perfil_usuario.grupo == 'E' %}aria-labelledby="footer-about"{% endif %}>
+                        <li><a href="{% url 'missao' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Missão</a></li>
+                        <li><a href="{% url 'financas' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}{% if perfil_usuario.grupo == 'E' %}Financeiro{% else %}Transparência{% endif %}</a></li>
+                        <li><a href="{% url 'trabalhe_conosco' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Trabalhe conosco</a></li>
+                        <li><a href="{% url 'eventos' %}">{% if perfil_usuario.grupo != 'E' %}<span class="sr-only">Link para </span>{% endif %}Eventos</a></li>
+                    </ul>
+                {% if perfil_usuario.grupo == 'E' %}
+                </nav>
+                {% else %}
+                </div>
+                {% endif %}
+                <div {% if perfil_usuario.grupo == 'E' %}aria-labelledby="address-info"{% endif %} class="box">
+                    <h2 id="address-info">Endereço</h2>
+                    <p>Come Tecnologias Ltda.</p>
+                    <p>Rua Barbary Lane, 28</p>
+                    <p>Rio de Janeiro - RJ</p>
+                    <p>CEP: 23.897-000</p>
+                </div>
+                <div {% if perfil_usuario.grupo == 'E' %}aria-hidden="true"{% endif %} class="box last">
+                    <p class="logo">Come</p>
+                </div>
+        </{% if perfil_usuario.grupo == 'E' %}footer{% else %}div{% endif %}>
+        {% endblock %}
+    </div>
+    {% block scripts %}
+        <script>
+            const main = new Vue({
+                el: '#app',
+                delimiters: ['[[', ']]'],
+                methods: {
+                    registrarMudancaInputForm(event) {
+                        let urlAtual = new URL(window.location.href);
+                        let parametros = new URLSearchParams('');
+                        parametros.append('path', urlAtual.pathname);
+                        parametros.append('el', '#' + event.target.id);
+                        parametros.append('val', event.target.value);
+                        console.log(event);
+                        fetch("{% url 'log' %}" + '?' + parametros.toString());
+                    },
+                }
+            });
+        </script>
+    {% endblock %}
+    </body>
+</html>
